@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blink – Chat by muditWebDev India</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+   
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0a0a0a;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      z-index: -3;
+    }
+
+    .bg-pattern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(240, 147, 251, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(118, 75, 162, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 60% 60%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(180deg); }
+    }
+
+    /* Animated particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      animation: particleFloat 15s infinite linear;
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Loading screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeOut 1s ease-in-out 3s forwards;
+    }
+
+    .loading-logo {
+      font-size: 4rem;
+      font-weight: 800;
+      background: linear-gradient(45deg, #667eea, #f093fb, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 2rem;
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1rem;
+      margin-top: 2rem;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5)); }
+      50% { filter: drop-shadow(0 0 40px rgba(240, 147, 251, 0.7)); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.1); pointer-events: none; }
+    }
+
+    /* Main content animations */
+    .main-content {
+      opacity: 0;
+      animation: slideInUp 1s ease-out 3.5s forwards;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 1rem;
+    }
+
+    @keyframes slideInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Professional header design */
+    .header {
+      text-align: center;
+      margin: 2rem 0;
+      position: relative;
+      opacity: 0;
+      animation: headerSlide 1s ease-out 4s forwards;
+    }
+
+    @keyframes headerSlide {
+      0% {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(45deg, #667eea, #f093fb, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 4px 20px rgba(255, 255, 255, 0.4);
+      margin-bottom: 0.5rem;
+      animation: logoGlow 3s ease-in-out infinite alternate;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+      position: relative;
+    }
+
+    .logo::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      border-radius: 20px;
+      animation: shimmer 3s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes logoGlow {
+      from { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 15px rgba(102, 126, 234, 0.6)); }
+      to { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3)) drop-shadow(0 0 25px rgba(240, 147, 251, 0.8)); }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .subtitle {
+      color: #ffffff;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 500;
+      opacity: 0.9;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .developer-info {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+      font-weight: 300;
+      font-style: italic;
+      position: relative;
+      text-align: center;
+    }
+
+    .developer-info::before {
+      content: '✨';
+      margin-right: 0.5rem;
+    }
+
+    .developer-info::after {
+      content: '✨';
+      margin-left: 0.5rem;
+    }
+    .username-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+      box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: containerFadeIn 1s ease-out 4.5s forwards;
+    }
+
+    @keyframes containerFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .username-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(240, 147, 251, 0.6), transparent);
+      animation: slideGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes slideGlow {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .username-container.hidden {
+      opacity: 0;
+      transform: translateY(-30px) scale(0.9);
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .username-title {
+      background: linear-gradient(45deg, #e4e4e4, #f093fb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: clamp(1.3rem, 3vw, 1.5rem);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .username-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    #username {
+      padding: 1.2rem;
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      outline: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      font-weight: 500;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    #username::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #username:focus {
+      border-color: #f093fb;
+      box-shadow: 0 0 0 4px rgba(240, 147, 251, 0.2);
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .join-btn {
+      background: linear-gradient(45deg, #667eea, #f093fb);
+      color: white;
+      border: none;
+      padding: 1.2rem 2.5rem;
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      font-weight: 600;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Poppins', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+    }
+
+    .join-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+    .join-btn:disabled::before {
+        left: -100%; /* Reset shimmer on disabled */
+    }
+
+    .join-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .join-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(240, 147, 251, 0.4);
+    }
+   
+    .join-btn:not(:disabled):hover::before {
+        left: 100%;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 900px;
+      height: 70vh;
+      min-height: 400px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      border-radius: 25px;
+      box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      position: relative;
+      opacity: 0;
+      animation: chatSlideIn 1s ease-out 5s forwards;
+    }
+
+    @keyframes chatSlideIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(240, 147, 251, 0.9));
+      backdrop-filter: blur(10px);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      letter-spacing: 1px;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .chat-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: headerShimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes headerShimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    #chat-box {
+      height: calc(100% - 80px);
+      overflow-y: auto;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    .message {
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+      border-radius: 20px;
+      word-wrap: break-word;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: messageAppear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    @keyframes messageAppear {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .message:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .message::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 4px;
+      background: linear-gradient(to bottom, #667eea, #f093fb);
+      border-radius: 2px;
+    }
+    .input-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 900px;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: inputSlideUp 1s ease-out 5.5s forwards;
+    }
+
+    @keyframes inputSlideUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #message {
+      flex: 1;
+      padding: 1.2rem;
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: #ffffff;
+      font-weight: 500;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      resize: none;
+      min-height: 50px;
+    }
+
+    #message::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #message:focus {
+      border-color: #f093fb;
+      box-shadow: 0 0 0 4px rgba(240, 147, 251, 0.2);
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .send-btn {
+      background: linear-gradient(45deg, #667eea, #f093fb);
+      color: white;
+      border: none;
+      padding: 1.2rem 2.5rem;
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      font-weight: 600;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-family: 'Poppins', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      min-width: 120px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(240, 147, 251, 0.3);
+    }
+    
+    .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+    .send-btn:disabled::before {
+        left: -100%; /* Reset shimmer on disabled */
+    }
+
+    .send-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(240, 147, 251, 0.4);
+    }
+  
+    .send-btn:not(:disabled):hover::before {
+        left: 100%;
+    }
+
+
+    #chat-box::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chat-box::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    #chat-box::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #667eea, #f093fb);
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #chat-box::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #5a67d8, #e879f9);
+    }
+    .error-message {
+      color: #ff6b6b;
+      font-size: clamp(0.9rem, 1.5vw, 0.95rem);
+      margin-top: 1rem;
+      text-align: center;
+      font-weight: 500;
+      animation: errorShake 0.5s ease-in-out;
+    }
+
+    @keyframes errorShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .main-content {
+        padding: 0 0.5rem;
+      }
+
+      .username-container {
+        padding: 2rem 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .chat-container {
+        height: 60vh;
+        min-height: 350px;
+      }
+
+      .input-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .send-btn {
+        min-width: auto;
+        padding: 1rem 2rem;
+      }
+
+      #chat-box {
+        padding: 1.5rem;
+      }
+
+      .message {
+        padding: 0.8rem 1.2rem;
+        margin: 0.8rem 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .username-container {
+        padding: 1.5rem 1rem;
+      }
+
+      .chat-container {
+        height: 55vh;
+        min-height: 300px;
+      }
+
+      #chat-box {
+        padding: 1rem;
+      }
+
+      .message {
+        padding: 0.7rem 1rem;
+        margin: 0.7rem 0;
+      }
+    }
+
+    .connection-status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .connection-status.connected {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .connection-status.disconnected {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <script>
+ 
+    if (!sessionStorage.getItem('blinkHasRefreshedOnce')) {
+        console.log("Blink: First load detected. Setting auto-refresh for 2 seconds.");
+        sessionStorage.setItem('blinkHasRefreshedOnce', 'true'); // Mark that we've initiated a refresh
+        setTimeout(() => {
+            console.log("Blink: Performing auto-refresh.");
+            location.reload(); 
+        }, 2000); 
+    } else {
+        console.log("Blink: Page has already refreshed once, or it's a subsequent visit.");
+        
+    }
+  </script>
+  <div class="loading-screen">
+    <div class="loading-logo">🔵 Blink</div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Initializing Chat Experience...</div>
+  </div>
+
+  <div class="connection-status disconnected" id="connectionStatus"></div>
+
+  <div class="bg-pattern"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="main-content">
+    <div class="header">
+      <h1 class="logo">🔵 Blink</h1>
+      <p class="subtitle">Enterprise-Grade Real-time Communication</p>
+      <p class="developer-info">Crafted by muditWebDev India <br> Build 1.0.1 Jul 2025</p>
+    </div>
+
+    <div class="username-container" id="username-container">
+      <h2 class="username-title">Welcome to the Future</h2>
+      <div class="username-input-group">
+        <input id="username" placeholder="Enter your unique identity" />
+        <button class="join-btn" id="join-btn" onclick="enterChat()" disabled>Initialize Session</button>
+        <div id="error-message" class="error-message" style="color: rgb(76, 255, 76);"></div>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div class="chat-header">
+        💬 Live Communication Hub
+      </div>
+      <div id="chat-box"></div>
+    </div>
+
+    <div class="input-container">
+      <textarea id="message" placeholder="Compose your message..." onkeypress="handleKeyPress(event)" rows="1"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()" disabled>Transmit</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+    import {
+      getAuth, signInAnonymously, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, query,
+      orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+    createParticles();
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoeepu3AoFVfbJv1kg8Wm9zaWfFcCJjv0",
+      authDomain: "chatapp-fec7e.firebaseapp.com",
+      projectId: "chatapp-fec7e",
+      storageBucket: "chatapp-fec7e.appspot.com",
+      messagingSenderId: "399732763036",
+      appId: "1:399732763036:web:ce28a4d7f94406f7afc059",
+      measurementId: "G-QS94F1S8XQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const chatRef = collection(db, "messages");
+
+    let currentUser = null;
+    let firebaseReady = false; // New flag to indicate overall Firebase readiness
+
+    const joinButton = document.getElementById('join-btn');
+    const sendButton = document.getElementById('send-btn');
+    const connectionStatusDiv = document.getElementById('connectionStatus');
+
+    function updateConnectionStatus(isConnected) {
+        if (isConnected) {
+            connectionStatusDiv.textContent = 'Connected';
+            connectionStatusDiv.classList.remove('disconnected');
+            connectionStatusDiv.classList.add('connected');
+        } else {
+            connectionStatusDiv.textContent = 'Disconnected';
+            connectionStatusDiv.classList.remove('connected');
+            connectionStatusDiv.classList.add('disconnected');
+        }
+    }
+
+    signInAnonymously(auth)
+      .then(() => {
+        console.log("Anonymous sign-in initiated.");
+        updateConnectionStatus(true); // Assuming connection is good if sign-in starts
+      })
+      .catch(error => {
+        console.error("Auth error:", error);
+        updateConnectionStatus(false);
+        document.getElementById("error-message").textContent = "Failed to connect to chat service. Please try again.";
+      });
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        console.log("Signed in as anonymous user ID:", user.uid);
+
+      } else {
+        console.log("No user signed in.");
+        updateConnectionStatus(false);
+       
+        joinButton.disabled = true;
+        sendButton.disabled = true;
+      }
+    });
+
+    const unsubscribe = onSnapshot(query(chatRef, orderBy("timestamp")), async (snapshot) => {
+      if (!firebaseReady) {
+        firebaseReady = true;
+        console.log("Firestore data listener active. Firebase is ready.");
+        joinButton.disabled = false;
+        updateConnectionStatus(true);
+      }
+
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = "";
+      let messages = [];
+      snapshot.forEach(doc => messages.push({ id: doc.id, ...doc.data() }));
+      if (messages.length > 50) {
+        messages.sort((a, b) => (a.timestamp ? a.timestamp.toDate() : 0) - (b.timestamp ? b.timestamp.toDate() : 0));
+        const excess = messages.length - 50;
+        const idsToDelete = messages.slice(0, excess).map(msg => msg.id);
+
+        console.log(`Deleting ${excess} old messages.`);
+        
+        await Promise.all(idsToDelete.map(id => deleteDoc(doc(db, "messages", id))));
+
+        messages = messages.slice(excess); 
+      }
+
+      messages.forEach(msg => {
+        const div = document.createElement("div");
+        div.className = "message";
+        
+        const timestamp = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString() : 'N/A';
+        div.innerHTML = `<strong>${msg.user}</strong> <span style="font-size:0.7em; color: rgba(255,255,255,0.6);">(${timestamp})</span>:<br>${msg.text}`;
+        chatBox.appendChild(div);
+      });
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, (error) => {
+        console.error("Error listening to messages:", error);
+        updateConnectionStatus(false);
+        document.getElementById("error-message").textContent = " Looks like it's your first time here. Please refresh to start";
+        joinButton.disabled = true; 
+        sendButton.disabled = true;
+    });
+
+    async function enterChat() {
+      if (!firebaseReady) {
+        document.getElementById("error-message").textContent = "Chat service is not ready. Please wait a moment.";
+        return;
+      }
+
+      const nameInput = document.getElementById("username");
+      const errorDiv = document.getElementById("error-message");
+      const name = nameInput.value.trim();
+
+      errorDiv.textContent = ""; 
+
+      if (!name) {
+        errorDiv.textContent = "Please enter your unique identity.";
+        return;
+      }
+      const usersQuerySnapshot = await getDocs(query(chatRef)); 
+      const usernames = new Set();
+      usersQuerySnapshot.forEach(doc => {
+          if (doc.data().user) { 
+              usernames.add(doc.data().user.toLowerCase()); 
+          }
+      });
+
+      if (usernames.has(name.toLowerCase())) { 
+        errorDiv.textContent = "Identity already exists. Please choose another.";
+        return;
+      }
+
+      currentUser = name; 
+      document.getElementById("username-container").classList.add("hidden");
+      sendButton.disabled = false; 
+      setTimeout(() => {
+        document.getElementById("message").focus();
+      }, 500);
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("message");
+      const msg = input.value.trim();
+
+      if (!msg || !currentUser) {
+        console.warn("Cannot send message: Message is empty or user is not set.");
+        return;
+      }
+      sendButton.disabled = true;
+
+      try {
+        await addDoc(chatRef, {
+          user: currentUser,
+          text: msg,
+          timestamp: serverTimestamp()
+        });
+        input.value = ""; 
+      } catch (error) {
+        console.error("Error sending message:", error);
+        document.getElementById("error-message").textContent = "Failed to send message. Connection error?";
+      } finally {
+        sendButton.disabled = false; 
+      }
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter' && !sendButton.disabled) {
+        event.preventDefault(); 
+        sendMessage();
+      }
+    }
+
+    window.enterChat = enterChat;
+    window.sendMessage = sendMessage;
+    window.handleKeyPress = handleKeyPress;
+
+  </script>
+</body>
+</html>
